@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from dhanhq import dhanhq
+from datetime import datetime, timedelta
 
 # --- Configuration: Replace with your credentials ---
 CLIENT_ID = "YOUR_CLIENT_ID" 
@@ -22,21 +23,28 @@ def trade_strategy():
     Automated trading logic: Checks if price crossed below 200-day MA.
     """
     print("Running automated trading strategy...")
-    print(f"Current Date: 2026-01-11")
+    
+    # Calculate dates dynamically
+    today = datetime.now()
+    # Fetch data up to yesterday's date to ensure data is complete
+    to_date_str = (today - timedelta(days=1)).strftime('%Y-%m-%d')
+    # Fetch from ~300 days ago
+    from_date_str = (today - timedelta(days=300)).strftime('%Y-%m-%d')
+
+    print(f"Fetching data from {from_date_str} to {to_date_str}")
+
 
     # --- 1. Define the stock and timeframe ---
     instrument_id = '2885' # Example: Reliance Industries (Verify this ID on Dhan docs)
     exchange_segment = 'NSE_EQ'
     
     try:
-        # Fetching data for a valid past date range relative to today's date (2026-01-11).
-        # Dates changed to a historical range with data availability.
         historical_data = dhan.historical_daily_data(
             exchange_segment=exchange_segment,
-            security_id=instrument_id, # Use security_id here
+            security_id=instrument_id, 
             instrument_type='EQUITY',
-            from_date='2025-03-01', # Example start date (must be in the past)
-            to_date='2026-01-10'   # Example end date (yesterday's date)
+            from_date=from_date_str,
+            to_date=to_date_str
         )
         
         if 'data' not in historical_data or not historical_data['data']:
@@ -55,7 +63,6 @@ def trade_strategy():
         print("Error: DataFrame is empty after MA processing.")
         return
 
-    # Get the most recent closing price and MA value from the data provided
     last_close = df_data['close'].iloc[-1]
     last_ma = df_data['SMA_200'].iloc[-1]
     
@@ -65,7 +72,7 @@ def trade_strategy():
     # --- 3. Check the trading condition (Price goes below MA) ---
     if last_close < last_ma:
         print("SIGNAL: Price crossed below 200-day MA. Initiating SELL order procedures.")
-        # Place your SELL order code here (e.g., uncomment and configure order_result = dhan.intraday_order(...))
+        # Place your SELL order code here 
     else:
         print("SIGNAL: No sell signal yet. Price is above the 200-day MA.")
 
