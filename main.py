@@ -29,13 +29,13 @@ def trade_strategy():
     
     try:
         # Fetching data since May 2025 to cover 200 days.
-        # Function name corrected to 'historical_charts'
-        historical_data = dhan.historical_charts(
+        # Function name corrected to 'historical_daily_data' with correct parameters
+        historical_data = dhan.historical_daily_data(
             exchange_segment=exchange_segment,
-            instrument_id=instrument_id,
+            security_id=instrument_id, # Use security_id instead of instrument_id here
+            instrument_type='EQUITY', # Add this new required parameter
             from_date='2025-05-01', 
-            to_date='2026-01-11',
-            interval='Day'
+            to_date='2026-01-11'
         )
 
         if 'data' not in historical_data:
@@ -44,8 +44,6 @@ def trade_strategy():
 
     except Exception as e:
         print(f"Failed to fetch historical data: {e}")
-        # Log the exact error from the image
-        print(f"Failed to fetch historical data: 'dhanhq' object has no attribute 'historical_charts'")
         return
 
     # --- 2. Calculate the 200-day MA ---
