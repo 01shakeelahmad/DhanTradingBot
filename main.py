@@ -15,7 +15,7 @@ def trade_strategy():
     """
     print("Running automated trading strategy...")
 
-    market_status = dhan.get_market_status()
+    market_status = dhan.market_status()
     print(f"Market status: {market_status.get('msg', 'Unknown')}")
     
     # --- This is where we will add the 200-day MA logic later ---
